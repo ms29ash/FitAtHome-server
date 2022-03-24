@@ -1,36 +1,29 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
 
-var foodRouter = require('./routes/food');
-var usersRouter = require('./routes/users');
+const express = require('express');
+const cors = require('cors');
 
-var app = express();
+const foodRouter = require('./routes/food');
 
-app.use(logger('dev'));
+//importing mongodb
+const connectToMongo = require('./db')
+const app = express();
+app.use(cors())
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
 
+// Connecting to Database
+connectToMongo();
+
+/* Get port from environment and store in Express.*/
+
+const port = process.env.PORT || '4000';
+app.set('port', port);
+
+
+// Using Routes
 app.use('/', foodRouter);
-app.use('/users', usersRouter);
 
-// catch 404 and forward to error handler
-app.use(function (req, res, next) {
-  next(createError(404));
-});
 
-// error handler
-app.use(function (err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
+app.listen(port, () => {
+    console.log(`Example app listening on port ${port}`)
+})
 
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
-});
-
-module.exports = app;
