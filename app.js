@@ -22,6 +22,11 @@ app.set('port', port);
 // Using Routes
 app.use('/', foodRouter);
 
+//Test route
+app.get('/', (req, res) => {
+    res.send('Fit At Home')
+})
+
 
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`)
