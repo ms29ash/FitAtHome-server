@@ -6,8 +6,10 @@
     "start": "nodemon ./app.js"
   },
   "dependencies": {
+    "config": "^3.3.7",
     "cookie-parser": "~1.4.4",
     "cors": "^2.8.5",
+    "dotenv": "^16.0.0",
     "express": "~4.16.1",
     "mongoose": "^6.2.5",
     "nodemon": "^2.0.15"
