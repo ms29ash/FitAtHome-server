@@ -15,12 +15,12 @@ connectToMongo();
 
 /* Get port from environment and store in Express.*/
 
-const port = process.env.PORT || '4000';
-app.set('port', port);
+const port = process.env.PORT || 4000;
+// app.set('port', port);
 
 
 // Using Routes
-app.use('/', foodRouter);
+app.use('/food', foodRouter);
 
 //Test route
 app.get('/', (req, res) => {
