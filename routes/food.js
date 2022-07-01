@@ -19,15 +19,10 @@ router.get('/food', async (req, res, next) => {
 router.get('/food/:id', async (req, res, next) => {
   try {
     const id = req.params.id;
-    console.log(id)
 
     let food = await Food.find({ _id: id });
     res.json({ food });
-  } catch (error) {
-    console.log(error)
-  }
-
-});
+  });
 
 
 router.get('/meals', async (req, res, next) => {
