@@ -3,6 +3,9 @@ const express = require('express');
 const cors = require('cors');
 
 const foodRouter = require('./routes/food');
+const authRouter = require('./routes/auth');
+const mealsRouter = require('./routes/meals');
+const reviewsRouter = require('./routes/reviews');
 
 //importing mongodb
 const connectToMongo = require('./db')
@@ -21,6 +24,9 @@ const port = process.env.PORT || 4000;
 
 // Using Routes
 app.use('/food', foodRouter);
+app.use('/auth', authRouter);
+app.use('/reviews', reviewsRouter);
+app.use('/meals', mealsRouter);
 
 //Test route
 app.get('/', (req, res) => {

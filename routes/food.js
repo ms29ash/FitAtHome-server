@@ -7,7 +7,7 @@ const Reviews = require('../models/Reviews')
 
 /* GET home page. */
 
-router.get('/food', async (req, res, next) => {
+router.get('/', async (req, res, next) => {
   try {
     let food = await Food.find();
     res.json({ food });
@@ -16,7 +16,7 @@ router.get('/food', async (req, res, next) => {
   }
 
 });
-router.get('/food/:id', async (req, res, next) => {
+router.get('/:id', async (req, res, next) => {
   try {
     const id = req.params.id;
 
@@ -24,27 +24,6 @@ router.get('/food/:id', async (req, res, next) => {
     res.json({ food });
   } catch (error) {
     console.log(error);
-  }
-});
-
-
-router.get('/meals', async (req, res, next) => {
-  try {
-    let meals = await Meals.find({});
-    res.json({ meals });
-  } catch (error) {
-    console.log(error)
-  }
-
-});
-router.get('/reviews', async (req, res, next) => {
-  try {
-
-
-    let reviews = await Reviews.find({});
-    res.json({ reviews });
-  } catch (error) {
-    console.log(error)
   }
 });
 

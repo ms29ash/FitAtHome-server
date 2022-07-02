@@ -110,7 +110,7 @@ authRouter.post('/signup',
 
 
             //send email
-            transporter.sendMail(mailOptions, function (err, data) {
+            transporter.sendMail(mailOptions, (err, data) => {
                 if (errors) {
                     console.log("Errors " + errors);
                 } else {
@@ -131,11 +131,9 @@ authRouter.post('/signup',
 
 authRouter.post('/verify',
     [
-
         body("email", 'Enter a valid email').not().isEmpty().isEmail(),
         body("otp", "Enter right otp").not().isEmpty().isLength({ min: 4, max: 4 })
     ], async (req, res) => {
-
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             //change letter
@@ -179,8 +177,6 @@ authRouter.post('/verify',
 
 authRouter.put('/resendotp', async (req, res) => {
     try {
-
-
         let otp = otpGenerator.generate(4, { upperCaseAlphabets: false, specialChars: false, lowerCaseAlphabets: false });
         await UserVerify.findOneAndUpdate({ email: req.body.email }, { OTP: otp, createdAt: present, expireAt: endtime });
 
@@ -234,7 +230,6 @@ authRouter.post('/login', [
 
         const authtoken = jwt.sign(data, JWT_SECRET);
         success = true;
-
         res.json({ success, authtoken });
 
     } catch (errors) {
