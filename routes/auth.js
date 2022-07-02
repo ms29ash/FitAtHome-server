@@ -111,7 +111,7 @@ authRouter.post('/signup',
 
 
             //send email
-            transporter.sendMail(mailOptions, (err, data) => {
+            transporter.sendMail(mailOptions, (errors, data) => {
                 if (errors) {
                     console.log("Errors " + errors);
                 } else {
@@ -189,7 +189,7 @@ authRouter.put('/resendotp', async (req, res) => {
             subject: "verification code",
             "text": otp,
         }
-        transporter.sendMail(mailOptions, function (err, data) {
+        transporter.sendMail(mailOptions, function (errors, data) {
             if (errors) {
                 console.log("Errors " + errors);
             } else {
