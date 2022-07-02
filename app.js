@@ -24,7 +24,7 @@ const port = process.env.PORT || 4000;
 
 // Using Routes
 app.use('/food', foodRouter);
-app.use('/auth', authRouter);
+// app.use('/auth', authRouter);
 app.use('/reviews', reviewsRouter);
 app.use('/meals', mealsRouter);
 
