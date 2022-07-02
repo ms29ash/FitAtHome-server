@@ -55,7 +55,8 @@ let success = false;
 
 
 
-//Route:1 Signup Route
+
+/* ------------------------- //Route:1 Signup Route ------------------------- */
 authRouter.post('/signup',
     //Validation using express validator
     [
@@ -129,6 +130,7 @@ authRouter.post('/signup',
 
 
 
+/* ------------------------------ Verify Route------------------------------ */
 authRouter.post('/verify',
     [
         body("email", 'Enter a valid email').not().isEmpty().isEmail(),
@@ -144,7 +146,8 @@ authRouter.post('/verify',
 
 
 
-            let { email, otp } = req.body;
+            let email = req.body.email;
+            let otp = req.body.otp;
             let success = false;
 
             let userVerify = await UserVerify.findOne({ email: email })
@@ -174,7 +177,7 @@ authRouter.post('/verify',
     })
 
 
-
+/* ---------------------------- Resend Otp route ---------------------------- */
 authRouter.put('/resendotp', async (req, res) => {
     try {
         let otp = otpGenerator.generate(4, { upperCaseAlphabets: false, specialChars: false, lowerCaseAlphabets: false });
@@ -201,6 +204,7 @@ authRouter.put('/resendotp', async (req, res) => {
 })
 
 
+/* ------------------------------- Login route ------------------------------ */
 authRouter.post('/login', [
     body("email", 'Enter a valid email').not().isEmpty().isEmail(),
     body("password", "Enter a Strong Password").not().isEmpty().isLength({ min: 6 })
@@ -230,7 +234,7 @@ authRouter.post('/login', [
 
         const authtoken = jwt.sign(data, JWT_SECRET);
         success = true;
-        res.json({ success, authtoken });
+        res.json({ success: success, authtoken: authtoken });
 
     } catch (errors) {
         console.log({ errors })
