@@ -1,26 +1,26 @@
-import express from "express";
+const express = require("express");
 //bcrypt for password hashing
-import bcrypt from 'bcrypt'
+const bcrypt = require('bcrypt')
 //json web token auth
-import jwt from 'jsonwebtoken'
+const jwt = require('jsonwebtoken')
 //user model
-import User from '../Models/User.js'
+const User = require('../Models/User.js')
 //dotenv (env variables)
-import 'dotenv/config'
+require('dotenv/config')
 //Verify otp schema
-import UserVerify from '../Models/UserVerification.js'
+const UserVerify = require('../Models/UserVerification.js')
 //express validator validating req body
-import { body, validationResult } from 'express-validator';
+const { body, validationResult } = require('express-validator');
 
 //two step auth validation
-import nodemailer from 'nodemailer'
+const nodemailer = require('nodemailer')
 
 
 //otp generator
-import otpGenerator from 'otp-generator';
+const otpGenerator = require('otp-generator');
 
 //moment for time format 
-import moment from 'moment';
+const moment = require('moment')
 
 //create express router
 const authRouter = express.Router();
@@ -239,4 +239,4 @@ authRouter.post('/login', [
 })
 
 
-export default authRouter;
+module.exports = authRouter;

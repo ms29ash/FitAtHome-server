@@ -1,6 +1,6 @@
-import mongoose from 'mongoose';
+const mongoose = require('mongoose');
 const { Schema, model } = mongoose;
-import moment from 'moment';
+const moment = require('moment');
 
 const date = moment().utc('+05:30');
 const edate = moment().add(15, 'm').utc('+05:30')
@@ -29,4 +29,4 @@ const UserVerificationSchema = Schema({
 
 const User = model('UserVerify', UserVerificationSchema);
 
-export default User;
+module.exports = User;
