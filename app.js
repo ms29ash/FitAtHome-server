@@ -3,7 +3,7 @@ const express = require('express');
 const cors = require('cors');
 
 const foodRouter = require('./routes/food');
-const authRouter = require('./routes/auth');
+// const authRouter = require('./routes/auth');
 const mealsRouter = require('./routes/meals');
 const reviewsRouter = require('./routes/reviews');
 
