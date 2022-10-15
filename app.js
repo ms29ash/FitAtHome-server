@@ -6,7 +6,7 @@ const foodRouter = require('./routes/food');
 // const authRouter = require('./routes/auth');
 const mealsRouter = require('./routes/meals');
 const reviewsRouter = require('./routes/reviews');
-
+const paymentRouter = require('./routes/payment.js')
 //importing mongodb
 const connectToMongo = require('./db')
 const app = express();
@@ -27,6 +27,7 @@ app.use('/food', foodRouter);
 // app.use('/auth', authRouter);
 app.use('/reviews', reviewsRouter);
 app.use('/meals', mealsRouter);
+app.use('/payment', paymentRouter);
 
 //Test route
 app.get('/', (req, res) => {
