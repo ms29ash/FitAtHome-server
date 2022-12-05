@@ -1,12 +1,12 @@
 const express = require('express');
 const router = express.Router();
-//Import Melas Model
-const Meals = require('../models/Meals')
+
+const Category = require('../models/Category.js')
 
 router.get('/', async (req, res, next) => {
     try {
-        let meals = await Meals.find({});
-        res.json({ meals: meals });
+        let categories = await Category.find({});
+        res.status(200).send({ categories });
     } catch (error) {
         console.log(error)
     }

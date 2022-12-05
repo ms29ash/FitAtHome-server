@@ -4,7 +4,7 @@ const cors = require('cors');
 
 const foodRouter = require('./routes/food');
 // const authRouter = require('./routes/auth');
-const mealsRouter = require('./routes/meals');
+const categoryRouter = require('./routes/category');
 const reviewsRouter = require('./routes/reviews');
 const paymentRouter = require('./routes/payment.js')
 //importing mongodb
@@ -26,7 +26,7 @@ const port = process.env.PORT || 4000;
 app.use('/food', foodRouter);
 // app.use('/auth', authRouter);
 app.use('/reviews', reviewsRouter);
-app.use('/meals', mealsRouter);
+app.use('/category', categoryRouter);
 app.use('/payment', paymentRouter);
 
 //Test route
