@@ -4,17 +4,18 @@ const bcrypt = require('bcrypt')
 //json web token auth
 const jwt = require('jsonwebtoken')
 //user model
-const User = require('../Models/User.js')
+const User = require('../models/User.js')
 //dotenv (env variables)
 require('dotenv/config')
 //Verify otp schema
-const UserVerify = require('../Models/UserVerification.js')
+const UserVerify = require('../models/UserVerification.js')
 //express validator validating req body
 const { body, validationResult } = require('express-validator');
 
 //two step auth validation
 const nodemailer = require('nodemailer')
 
+const fetchIds = require('../middleware/verifyUser.js')
 
 //otp generator
 const otpGenerator = require('otp-generator');
@@ -29,7 +30,7 @@ const saltRounds = 10;
 //secret for jwt token
 const JWT_SECRET = process.env.JWT_SECRET
 //moment time
-const present = moment().utc('+05:30');
+const present = new Date()
 const endtime = moment().add(15, 'm').utc('+05:30')
 
 //nodemailer stuff 
@@ -44,7 +45,7 @@ let transporter = nodemailer.createTransport({
         pass: process.env.AUTH_PASS,
         clientId: process.env.AUTH_CLIENT_ID,
         clientSecret: process.env.AUTH_CLIENT_SECRET,
-        refreshToken: process.env.AUTH_REFRESH_TOKEN,
+        refreshToken: process.env.REFRESH_TOKEN,
     },
     tls: {
         rejectUnauthorized: false,
@@ -76,8 +77,10 @@ authRouter.post('/signup',
             //create new user
             let user = await User.findOne({ email: req.body.email });
             //finding user in database 
-            if (user) {
+            if (user && user.verified === true) {
                 return res.status(200).json({ success: false, error: "Sorry the user already exists" })
+            } else if (user && user.verified === false) {
+                await User.findOneAndDelete({ email: req.body.email })
             }
             //generating salt 
             const salt = await bcrypt.genSalt(saltRounds)
@@ -114,16 +117,17 @@ authRouter.post('/signup',
             transporter.sendMail(mailOptions, (errors, data) => {
                 if (errors) {
                     console.log("Errors " + errors);
+                    res.json({ success: success, message: 'Server Error' });
                 } else {
                     console.log("Email sent successfully");
+                    success = true;
+                    res.json({ success: success, userId: OtpVerify.email, message: 'verification code is sent successfully' });
                 }
             });
-            success = true;
-            res.json({ success: success, user: user, userId: OtpVerify.email })
 
         } catch (errors) {
             console.log(errors.message);
-            res.status(500).json({ success: true, errors: "internal server error" })
+            res.status(500).json({ success: false, errors: "internal server error" })
         }
     })
 
@@ -155,9 +159,7 @@ authRouter.post('/verify',
                 return res.json({ success: false, error: "User not found" })
             } else {
                 if (userVerify.expireAt < present) {
-
-                    await UserVerify.deleteOne({ email: email })
-
+                    console.log(userVerify.expireAt, present)
                     return res.json({ success: false, message: "otp expired" })
                 } else {
                     if (userVerify.OTP === otp) {
@@ -240,6 +242,29 @@ authRouter.post('/login', [
         console.log({ errors })
         res.status(500).json({ success: true, errors: "internal Server Error" })
     }
+})
+
+
+
+authRouter.post('/user', fetchIds, (req, res) => {
+
+    const { userId } = req.user;
+    console.log(userId);
+    try {
+
+        let user = User.findOne({ _id: userId });
+        if (user) {
+            return res.status(200).send({ success: true, email: user.email });
+        } else {
+            return res.status(401).send('user not found');
+
+        }
+    } catch (error) {
+        console.log(error)
+    }
+
+
+
 })
 
 

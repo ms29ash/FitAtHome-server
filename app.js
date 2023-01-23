@@ -3,10 +3,12 @@ const express = require('express');
 const cors = require('cors');
 
 const foodRouter = require('./routes/food');
-// const authRouter = require('./routes/auth');
+const authRouter = require('./routes/auth');
 const categoryRouter = require('./routes/category');
 const reviewsRouter = require('./routes/reviews');
 const paymentRouter = require('./routes/payment.js')
+
+const userDataRouter = require('./routes/userData.js')
 //importing mongodb
 const connectToMongo = require('./db')
 const app = express();
@@ -24,10 +26,11 @@ const port = process.env.PORT || 4000;
 
 // Using Routes
 app.use('/food', foodRouter);
-// app.use('/auth', authRouter);
+app.use('/auth', authRouter);
 app.use('/reviews', reviewsRouter);
 app.use('/category', categoryRouter);
 app.use('/payment', paymentRouter);
+app.use('/userData', userDataRouter)
 
 //Test route
 app.get('/', (req, res) => {

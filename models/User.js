@@ -24,6 +24,11 @@ const UserSchema = Schema({
         type: Boolean,
         default: false
     },
+    address: {
+        type: String,
+        default: null
+
+    }
 })
 
 const User = model('Users', UserSchema);

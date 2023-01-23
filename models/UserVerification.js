@@ -24,6 +24,7 @@ const UserVerificationSchema = Schema({
     expireAt: {
         type: Date,
         default: edate,
+        expires: 0
     }
 })
 
