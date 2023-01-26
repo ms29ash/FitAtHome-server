@@ -3,7 +3,7 @@ const { Schema, model } = mongoose;
 const moment = require('moment');
 
 const date = moment().utc('+05:30');
-const edate = moment().add(15, 'm').utc('+05:30')
+const edate = moment().add(5, 'm').utc('+05:30')
 
 
 const UserVerificationSchema = Schema({
@@ -24,7 +24,7 @@ const UserVerificationSchema = Schema({
     expireAt: {
         type: Date,
         default: edate,
-        expires: 0
+        expires: 2
     }
 })
 

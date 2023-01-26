@@ -31,7 +31,7 @@ const saltRounds = 10;
 const JWT_SECRET = process.env.JWT_SECRET
 //moment time
 const present = new Date()
-const endtime = moment().add(15, 'm').utc('+05:30')
+const endtime = moment().add(5, 'm').utc('+05:30')
 
 //nodemailer stuff 
 let transporter = nodemailer.createTransport({
@@ -55,8 +55,6 @@ let transporter = nodemailer.createTransport({
 let success = false;
 
 
-
-
 /* ------------------------- //Route:1 Signup Route ------------------------- */
 authRouter.post('/signup',
     //Validation using express validator
@@ -71,16 +69,15 @@ authRouter.post('/signup',
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             //change letter
-            return res.status(500).json({ success: false, errors: errors.array() });
+            return res.status(500).json({ success: false, errorMessage: errors.array() });
         }
         try {
             //create new user
             let user = await User.findOne({ email: req.body.email });
+            console.log(user);
             //finding user in database 
-            if (user && user.verified === true) {
-                return res.status(200).json({ success: false, error: "Sorry the user already exists" })
-            } else if (user && user.verified === false) {
-                await User.findOneAndDelete({ email: req.body.email })
+            if (user) {
+                return res.status(400).json({ success: false, errorMessage: "Sorry the user already exists" })
             }
             //generating salt 
             const salt = await bcrypt.genSalt(saltRounds)
@@ -96,20 +93,26 @@ authRouter.post('/signup',
             })
             let otp = otpGenerator.generate(4, { upperCaseAlphabets: false, specialChars: false, lowerCaseAlphabets: false });
 
-
-            let OtpVerify = {
+            const userverify = await UserVerify.findOne({ email: req.body.email })
+            console.log('userverify', userverify)
+            OtpVerify = {
                 email: req.body.email,
                 OTP: otp
             }
-            await UserVerify.create(OtpVerify);
+            if (userverify) {
+                await UserVerify.findOneAndUpdate({ email: req.body.email }, { OTP: otp, createdAt: present, expireAt: endtime })
+            } else {
+
+                await UserVerify.create(OtpVerify);
+            }
 
 
             //mail options
             let mailOptions = {
                 from: process.env.AUTH_USER,
                 to: req.body.email,
-                subject: "verification code",
-                "text": OtpVerify.OTP,
+                subject: "FITATHOME verification code",
+                "text": `verification code for Fitathome is ${OtpVerify.OTP}`,
             }
 
 
@@ -117,7 +120,7 @@ authRouter.post('/signup',
             transporter.sendMail(mailOptions, (errors, data) => {
                 if (errors) {
                     console.log("Errors " + errors);
-                    res.json({ success: success, message: 'Server Error' });
+                    res.status(400).json({ success: false, errorMessage: 'Server Error' });
                 } else {
                     console.log("Email sent successfully");
                     success = true;
@@ -127,7 +130,7 @@ authRouter.post('/signup',
 
         } catch (errors) {
             console.log(errors.message);
-            res.status(500).json({ success: false, errors: "internal server error" })
+            res.status(500).json({ success: false, errorMessage: "internal server error" })
         }
     })
 
@@ -143,38 +146,41 @@ authRouter.post('/verify',
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             //change letter
-            return res.status(500).json({ success: false, errors: errors.array() });
+            return res.status(500).json({ success: false, errorMessage: errors.array() });
         }
 
         try {
-
-
-
             let email = req.body.email;
             let otp = req.body.otp;
-            let success = false;
 
             let userVerify = await UserVerify.findOne({ email: email })
             if (!userVerify) {
-                return res.json({ success: false, error: "User not found" })
+                return res.status(400).send({ success: false, errorMessage: "User not found" })
             } else {
                 if (userVerify.expireAt < present) {
                     console.log(userVerify.expireAt, present)
-                    return res.json({ success: false, message: "otp expired" })
+                    return res.status(400).json({ success: false, errorMessage: "otp expired" })
                 } else {
                     if (userVerify.OTP === otp) {
                         success = true;
                         await UserVerify.deleteOne({ email: email })
-                        await User.findOneAndUpdate({ email: email }, { verified: true });
-                        return res.json({ success: true, message: "user verified" })
+                        const user = await User.findOneAndUpdate({ email: email }, { verified: true });
+                        const data = {
+                            user: {
+                                id: user._id,
+                            }
+                        }
+
+                        const authtoken = jwt.sign(data, JWT_SECRET);
+                        return res.json({ success: true, message: "user verified", authtoken })
                     } else {
-                        return res.json({ success: false, message: "otp not matched" })
+                        return res.status(400).json({ success: false, errorMessage: "otp not matched" })
                     }
                 }
             }
         } catch (errors) {
             console.log({ errors })
-            res.status(500).json({ success: false, errors: "internal Server Error" })
+            res.status(500).json({ success: false, errorMessage: "internal Server Error" })
         }
     })
 
@@ -194,14 +200,15 @@ authRouter.put('/resendotp', async (req, res) => {
         transporter.sendMail(mailOptions, function (errors, data) {
             if (errors) {
                 console.log("Errors " + errors);
+                res.json({ success: false, message: "server error" });
             } else {
+                res.json({ success: true, message: "otp send successfully" })
                 console.log("Email sent successfully");
             }
         });
-        res.json({ success: true, message: "otp send successfully" })
     } catch (errors) {
         console.log({ errors })
-        res.status(500).json({ success: false, errors: "internal Server Error" })
+        res.status(500).json({ success: false, errorMessage: "internal Server Error" })
     }
 })
 
@@ -216,31 +223,34 @@ authRouter.post('/login', [
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         //change letter
-        return res.status(500).json({ success: false, errors: errors.array() });
+        return res.status(500).json({ success: false, errorMessage: errors.array() });
     }
     try {
         let user = await User.findOne({ email: req.body.email })
         if (!user) {
-            return res.status(400).json({ success: false, errors: 'please login with valid credentials' });
+            return res.status(400).json({ success: false, errorMessage: 'user not found' });
         }
         const passwordCompare = await bcrypt.compare(req.body.password, user.password);
         if (!passwordCompare) {
-            return res.status(400).json({ success: false, errors: 'please login with correct credentials' });
+            return res.status(400).json({
+                success: false,
+                errorMessage: 'please login with correct credentials'
+            });
         }
 
         const data = {
             user: {
-                id: user.id,
+                id: user._id,
             }
         }
 
         const authtoken = jwt.sign(data, JWT_SECRET);
         success = true;
-        res.json({ success: success, authtoken: authtoken });
+        res.json({ success: success, authtoken: authtoken, email: user?.email });
 
     } catch (errors) {
         console.log({ errors })
-        res.status(500).json({ success: true, errors: "internal Server Error" })
+        res.status(500).json({ success: false, errorMessage: "internal Server Error" })
     }
 })
 
