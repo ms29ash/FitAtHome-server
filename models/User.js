@@ -24,10 +24,12 @@ const UserSchema = Schema({
         type: Boolean,
         default: false
     },
-    address: {
-        type: String,
-        default: null
+    userData: {
+        address: {
+            type: String,
+            default: null
 
+        }
     }
 })
 

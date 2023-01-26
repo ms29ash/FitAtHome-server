@@ -74,7 +74,6 @@ authRouter.post('/signup',
         try {
             //create new user
             let user = await User.findOne({ email: req.body.email });
-            console.log(user);
             //finding user in database 
             if (user) {
                 return res.status(400).json({ success: false, errorMessage: "Sorry the user already exists" })
@@ -94,7 +93,6 @@ authRouter.post('/signup',
             let otp = otpGenerator.generate(4, { upperCaseAlphabets: false, specialChars: false, lowerCaseAlphabets: false });
 
             const userverify = await UserVerify.findOne({ email: req.body.email })
-            console.log('userverify', userverify)
             OtpVerify = {
                 email: req.body.email,
                 OTP: otp
@@ -158,7 +156,6 @@ authRouter.post('/verify',
                 return res.status(400).send({ success: false, errorMessage: "User not found" })
             } else {
                 if (userVerify.expireAt < present) {
-                    console.log(userVerify.expireAt, present)
                     return res.status(400).json({ success: false, errorMessage: "otp expired" })
                 } else {
                     if (userVerify.OTP === otp) {
@@ -256,25 +253,23 @@ authRouter.post('/login', [
 
 
 
-authRouter.post('/user', fetchIds, (req, res) => {
-
-    const { userId } = req.user;
-    console.log(userId);
+authRouter.post('/userData', fetchIds, async (req, res) => {
+    const { id } = req?.user?.user;
     try {
 
-        let user = User.findOne({ _id: userId });
+        let user = await User.findOne({ _id: id });
         if (user) {
-            return res.status(200).send({ success: true, email: user.email });
-        } else {
-            return res.status(401).send('user not found');
 
+            const { name, verified, userData } = user
+
+            return res.status(200).json({ success: true, name: name, userData: userData, verified: verified });
+        } else {
+            return res.status(401).json({ success: false, errorMessage: 'user not found' });
         }
     } catch (error) {
         console.log(error)
+        return res.status(500).json({ success: false, errorMessage: 'Internal Server Error' });
     }
-
-
-
 })
 
 
