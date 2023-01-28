@@ -10,11 +10,9 @@ router.put('/addAddress', fetchIds, async (req, res, next) => {
     try {
         let { id } = req.user?.user
         const user = await User.findOne({ _id: id })
-
-        user.userData.address = req.body.address
-        await user.save()
-
-        return res.status(201).json({ success: true, message: 'Address updated successfully' })
+        let update = user?.userData?.address.push({ address: req.body.address })
+        const save = await user.save()
+        return res.status(201).send({ success: true, message: `Address updated successfully`, item: user?.userData?.address[update - 1] })
 
     } catch (error) {
         console.log(error)

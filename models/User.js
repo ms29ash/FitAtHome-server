@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const addressSchema = require('./Address');
 const { Schema, model } = mongoose;
 
 const UserSchema = Schema({
@@ -25,11 +26,7 @@ const UserSchema = Schema({
         default: false
     },
     userData: {
-        address: {
-            type: String,
-            default: null
-
-        }
+        address: [addressSchema]
     }
 })
 
