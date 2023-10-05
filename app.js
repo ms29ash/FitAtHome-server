@@ -5,6 +5,7 @@ const cors = require('cors');
 const foodRouter = require('./routes/food');
 const authRouter = require('./routes/auth');
 const categoryRouter = require('./routes/category');
+const serviceRouter = require('./routes/service');
 const reviewsRouter = require('./routes/reviews');
 const paymentRouter = require('./routes/payment.js')
 
@@ -29,6 +30,7 @@ app.use('/food', foodRouter);
 app.use('/auth', authRouter);
 app.use('/reviews', reviewsRouter);
 app.use('/category', categoryRouter);
+app.use('/service', serviceRouter);
 app.use('/payment', paymentRouter);
 app.use('/userData', userDataRouter)
 
