@@ -5,6 +5,7 @@ const categorySchema = new Schema({
     title: String,
     description: String,
     image: String,
+    icon: String,
 });
 const Category = mongoose.model('Category', categorySchema);
 
