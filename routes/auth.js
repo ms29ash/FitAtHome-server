@@ -22,7 +22,8 @@ const otpGenerator = require("otp-generator");
 
 //moment for time format
 const moment = require("moment");
-const Box = require("../models/Box.js");
+const { Box } = require("../models/Box.js");
+const UserData = require("../models/UserData.js");
 
 //create express router
 const authRouter = express.Router();
@@ -97,9 +98,7 @@ authRouter.post(
         email: req.body.email,
         password: securePassword,
       });
-      let box = await Box.create({
-        user: user._id,
-      });
+
       let otp = otpGenerator.generate(4, {
         upperCaseAlphabets: false,
         specialChars: false,
@@ -145,6 +144,7 @@ authRouter.post(
           });
         }
       });
+      res.json({ success: true });
     } catch (errors) {
       console.log(errors.message);
       res
@@ -275,9 +275,7 @@ authRouter.post(
         .json({ success: false, errorMessage: errors.array() });
     }
     try {
-      let user = await User.findOne({ email: req.body.email })
-        .select("-password")
-        .populate("box");
+      let user = await User.findOne({ email: req.body.email }).populate("box");
       if (!user) {
         return res
           .status(400)
