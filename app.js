@@ -8,8 +8,9 @@ const serviceRouter = require("./routes/service");
 const reviewsRouter = require("./routes/reviews");
 const paymentRouter = require("./routes/payment.js");
 const productRouter = require("./routes/product");
-
+const boxRouter = require("./routes/box");
 const userDataRouter = require("./routes/userData.js");
+
 //importing mongodb
 const connectToMongo = require("./db");
 const app = express();
@@ -33,6 +34,7 @@ app.use("/service", serviceRouter);
 app.use("/payment", paymentRouter);
 app.use("/userData", userDataRouter);
 app.use("/product", productRouter);
+app.use("/box", boxRouter);
 
 //Test route
 app.get("/", (req, res) => {
