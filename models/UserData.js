@@ -11,6 +11,10 @@ const userDataSchema = mongoose.Schema({
     type: mongoose.Types.ObjectId,
     ref: "User",
   },
+  defaultAddress: {
+    type: mongoose.Types.ObjectId,
+    ref: "Address",
+  },
 });
 
 const UserData = mongoose.model("UserData", userDataSchema);

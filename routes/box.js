@@ -7,7 +7,7 @@ const Food = require("../models/Food");
 
 router.get("/", fetchIds, async (req, res, next) => {
   try {
-    let box = await Box.findOne({ user: req.user.id }).populate({
+    let box = await Box.findOne({ user: req.user.user.id }).populate({
       path: "items",
       populate: {
         path: "item",
@@ -46,7 +46,9 @@ router.post("/addToBox", fetchIds, async (req, res) => {
       item: item,
       type: type,
     });
-    const box = await Box.findOne({ user: req.user.id });
+    console.log(req.user.user.id);
+    const box = await Box.findOne({ user: req.user.user.id });
+    console.log(box);
     box.items.push(newItem._id);
     let newBox = await box.save();
     await newBox.populate({

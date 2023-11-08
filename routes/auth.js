@@ -310,7 +310,7 @@ authRouter.post(
   }
 );
 
-authRouter.post("/userData", fetchIds, async (req, res) => {
+authRouter.get("/userData", fetchIds, async (req, res) => {
   const { id } = req?.user?.user;
   try {
     let user = await User.findOne({ _id: id })
@@ -323,7 +323,19 @@ authRouter.post("/userData", fetchIds, async (req, res) => {
             path: "item",
           },
         },
+      })
+      .populate({
+        path: "userData",
+        populate: [
+          {
+            path: "address",
+          },
+          {
+            path: "defaultAddress",
+          },
+        ],
       });
+
     if (user) {
       return res.status(200).json({
         success: true,

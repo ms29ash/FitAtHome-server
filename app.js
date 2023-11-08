@@ -9,7 +9,7 @@ const reviewsRouter = require("./routes/reviews");
 const paymentRouter = require("./routes/payment.js");
 const productRouter = require("./routes/product");
 const boxRouter = require("./routes/box");
-const userDataRouter = require("./routes/userData.js");
+const addressRouter = require("./routes/address.js");
 
 //importing mongodb
 const connectToMongo = require("./db");
@@ -32,7 +32,7 @@ app.use("/reviews", reviewsRouter);
 app.use("/category", categoryRouter);
 app.use("/service", serviceRouter);
 app.use("/payment", paymentRouter);
-app.use("/userData", userDataRouter);
+app.use("/userData/address", addressRouter);
 app.use("/product", productRouter);
 app.use("/box", boxRouter);
 
